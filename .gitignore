@@ -128,3 +128,21 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# .venv
+.venv
+
+#node_modules
+node_modules
+
+#lock files
+package-lock.json
+yarn.lock
+
+
+#mac files
+.DS_Store
+
+
+google_api_key.js
