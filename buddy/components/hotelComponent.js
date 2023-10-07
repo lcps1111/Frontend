@@ -2,6 +2,7 @@ import { Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Linking, Image }
 import * as Animatable from 'react-native-animatable';
 import { LinkIcon } from "react-native-heroicons/solid";
 import { Dimensions } from 'react-native';
+import { clickLogger } from "../components/logging";
 
 // Get device width and height
 const windowWidth = Dimensions.get('window').width;
@@ -20,13 +21,14 @@ export const handleLinkPress = (linkUrl) => {
             {
                 text: "Yes",
                 onPress: () => Linking.openURL(linkUrl)
+
             }
         ],
         { cancelable: false }
     );
 };
 
-export const renderHotel = (hotel, index, numResults) => {
+export const renderHotel = (hotel, index, numResults, gender) => {
     if (index < numResults) {
         return (
 
@@ -61,7 +63,10 @@ export const renderHotel = (hotel, index, numResults) => {
                             />
                         ))}
                     </ScrollView>
-                    <TouchableOpacity onPress={() => handleLinkPress(hotel.deeplink)}>
+                    <TouchableOpacity onPress={() => {
+                        handleLinkPress(hotel.deeplink);
+                        clickLogger("accommodation", gender)
+                    }}>
                         <Animatable.View
                             animation="bounceIn"
                             duration={1000}

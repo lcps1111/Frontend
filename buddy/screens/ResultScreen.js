@@ -6,11 +6,12 @@ import { ArrowUpCircleIcon, TrashIcon, PlusCircleIcon, HomeIcon } from "react-na
 import { addToItineraryList, getItinerary, addItinerary, removeFromItinerary, replaceItinerary, parseTime } from '../service/dataService';
 import { MapComponent, mapAnimateToRegion } from '../components/MapComponent';
 import { renderHotel } from "../components/hotelComponent";
-import FlightComponent, { renderFlightDetails, renderFlightLinks, locationTitle } from "../components/flightComponent";
+import FlightComponent from "../components/flightComponent";
 import { GooglePlacesInput } from "../components/GooglePlacesInput";
 import { SingleSpot } from "../components/SingleSpot";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import flightComponent from "../components/flightComponent";
+import { clickLogger } from "../components/logging";
+
 
 // this is the result page of the app, including the itinerary, flight details, hotel details and the buttons to render the respective components.
 const ResultScreen = ({ route }) => {
@@ -27,19 +28,6 @@ const ResultScreen = ({ route }) => {
         hotelData: [],
         ...route.params,
     });
-    console.log("Origin", params.flightData.data.flights[0].segments[0].legs[0].originStationCode);
-    console.log("Destination", params.flightData.data.flights[0].segments[0].legs[0].destinationStationCode);
-    console.log("departureDateTime's Date for leg1", params.flightData.data.flights[0].segments[0].legs[0].departureDateTime.split('T')[0]);
-    console.log("departureDateTime's Time for leg1", params.flightData.data.flights[0].segments[0].legs[0].departureDateTime.split('T')[1].substr(0, 5));
-    console.log("arrivalDateTime's Date for leg1", params.flightData.data.flights[0].segments[0].legs[0].arrivalDateTime.split('T')[0]);
-    console.log("arrivalDateTime's Time for leg1", params.flightData.data.flights[0].segments[0].legs[0].arrivalDateTime.split('T')[1].substr(0, 5));
-    console.log("departureDateTime's Date for leg2", params.flightData.data.flights[0].segments[1].legs[0].departureDateTime.split('T')[0]);
-    console.log("departureDateTime's Time for leg2", params.flightData.data.flights[0].segments[1].legs[0].departureDateTime.split('T')[1].substr(0, 5));
-    console.log("arrivalDateTime's Date for leg2", params.flightData.data.flights[0].segments[1].legs[0].arrivalDateTime.split('T')[0]);
-    console.log("arrivalDateTime's Time for leg2", params.flightData.data.flights[0].segments[1].legs[0].arrivalDateTime.split('T')[1].substr(0, 5));
-    console.log("totalPrice", params.flightData.data.flights[0].purchaseLinks[0].totalPrice);
-    console.log("providerId", params.flightData.data.flights[0].purchaseLinks[0].providerId);
-    console.log("url", params.flightData.data.flights[0].purchaseLinks[0].url);
 
 
     const navigation = useNavigation();
@@ -194,15 +182,32 @@ const ResultScreen = ({ route }) => {
         }
     }, []);
     // this if for parsing the price to integer and calculating the total price
-    // useEffect(() => {
-    //     let sum = 0;
-    //     for (const day in params.itineraryData) {
-    //         for (const activity of params.itineraryData[day]) {
-    //             sum += parseInt(activity['price(hkd)']);
-    //         }
-    //     }
-    //     setTotalPrice(sum);
-    // }, [params.itineraryData]);
+    useEffect(() => {
+        let sum = 0;
+
+        // Ensure params.itineraryData is an object
+        if (typeof params.itineraryData === 'object' && params.itineraryData !== null) {
+
+            for (const day in params.itineraryData) {
+
+                // Ensure params.itineraryData[day] is an array before iterating over it
+                if (Array.isArray(params.itineraryData[day])) {
+
+                    for (const activity of params.itineraryData[day]) {
+                        if (activity && activity['price(hkd)']) {  // Ensure activity is not undefined and has price
+                            sum += parseInt(activity['price(hkd)'], 10);  // Always provide radix to parseInt
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+        setTotalPrice(sum);
+    }, [params.itineraryData]);
+
 
     return (
         // this is for rendering the itinerary details and the buttons to render the respective components and the buttons to save and return to the home page
@@ -294,6 +299,7 @@ const ResultScreen = ({ route }) => {
                         setShowFlightDetails(false);
                         setShowHotelDetails(false);
                         setShowGooglePlacesInput(false);
+                        clickLogger("add new spot", params.gender);
                     }}
                     onCancel={() => {
                         setShowMap(true);
@@ -398,10 +404,14 @@ const ResultScreen = ({ route }) => {
                                             </View>
                                             <TouchableOpacity
                                                 style={styles.deleteButton}
-                                                onPress={() => deleteSpot(params.id, day, activity.tourist_spot || activity.restaurant)}
+                                                onPress={() => {
+                                                    deleteSpot(params.id, day, activity.tourist_spot || activity.restaurant);
+                                                    clickLogger("delete spot", params.gender);
+                                                }}
                                             >
                                                 <TrashIcon size={25} color="gray" />
                                             </TouchableOpacity>
+
 
                                         </Animatable.View>
 
@@ -427,6 +437,7 @@ const ResultScreen = ({ route }) => {
 
                     {showFlightDetails && <FlightComponent
                         flights={params.flightData}
+                        gender={params.gender}
                     />}
 
 
@@ -444,7 +455,7 @@ const ResultScreen = ({ route }) => {
                             .map((hotel, index) => {
                                 const sortedImages = hotelSortOrder === 'asc' ? hotel.images.sort() : hotel.images.sort().reverse();
                                 const sortedHotel = { ...hotel, images: sortedImages };
-                                return renderHotel(sortedHotel, index, numResults);
+                                return renderHotel(sortedHotel, index, numResults, gender = params.gender);
                             })
                     }
                     { // this is for rendering the hotel details
@@ -462,7 +473,7 @@ const ResultScreen = ({ route }) => {
 
 
                 </View>
-            </ScrollView>
+            </ScrollView >
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
                     // this is the button for rendering the itinerary

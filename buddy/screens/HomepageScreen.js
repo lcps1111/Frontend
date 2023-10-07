@@ -14,7 +14,7 @@ import BudgetSetter from "../components/BugetSetter";
 import SearchAndResetButtons from "../components/SearchAndResetButtons";
 import LoadingAnimation from "../components/LoadingAnimation";
 import GenderPicker from "../components/GenderPicker";
-import { parse } from "papaparse";
+
 
 
 
@@ -166,13 +166,13 @@ const HomepageScreen = () => {
       "title": tripTitle,
       "departure": departure,
       "destination": destination,
-      "adults": parseInt(guest),
-      "children": parseInt(children),
-      "fromDate": fromDate.toISOString().slice(0, 10),
-      "toDate": toDate.toISOString().slice(0, 10),
-      "budget": budget,
+      "start_date": fromDate.toISOString().slice(0, 10),
+      "end_date": toDate.toISOString().slice(0, 10),
       "duration": duration,
-      "gender": gender
+      "number_of_adults": parseInt(guest),
+      "number_of_children": parseInt(children),
+      "gender": gender,
+      "budget": budget
     })
 
 
@@ -210,13 +210,13 @@ const HomepageScreen = () => {
       });
 
       // Send the request of the user information to the endpoints
-      // await fetch(serverUrl + "user", {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: userParams
-      // });
+      await fetch(serverUrl + "form_logging", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: userParams
+      });
 
       // Check if the response of the itinerary is ok
       if (!itineraryResponse.ok) {
@@ -249,7 +249,7 @@ const HomepageScreen = () => {
       navigation.navigate('ResultScreen', {
         newItinerary: true, itineraryData: itineraryData,
         flightData: airTicketData, hotelData: hotelData, origin: flightCodeDeparture,
-        destination: flightCodeDestination, tripTitle: tripTitle, location: destination
+        destination: flightCodeDestination, tripTitle: tripTitle, location: destination, gender: gender
       });
 
 

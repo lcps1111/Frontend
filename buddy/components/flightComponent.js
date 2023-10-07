@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, Image } from "react-native";
 import * as Animatable from 'react-native-animatable';
 import React from "react";
+import { clickLogger } from "../components/logging";
 
 
 // this is for navigating to the external link with alert message
@@ -23,61 +24,53 @@ const handleLinkPress = (linkUrl) => {
     );
 };
 
-export default FlightComponent = ({ flights }) => {
-
-
+export default FlightComponent = ({ flights, gender }) => {
     return (
         <>
-
             <Text style={styles.flightText}>Flights Information</Text>
-
-            {(flights.data.flights || []).map((flight, index) => (
-
-                <TouchableOpacity onPress={() => handleLinkPress(flight.purchaseLinks[0].url)} key={index} style={styles.separateBox}>
+            {flights.map((flight, index) => (
+                <TouchableOpacity onPress={() => {
+                    handleLinkPress(flight.uri);
+                    clickLogger("flight", gender)
+                }}
+                    key={index} style={styles.separateBox}>
                     {index === 0 && (
                         <View style={styles.cheapestLabel}>
                             <Text style={styles.cheapestLabelText}>Cheapest</Text>
                         </View>
                     )}
-
                     <Animatable.View animation="bounceIn" duration={1000} style={styles.activityContainer}>
+                        <Text style={styles.activityDescription_agent}>Airline: </Text>
                         <View style={styles.foContent}>
+                            <Image style={styles.iconcheap} source={{ uri: flight.airline_icon }} />
                             <View style={styles.ftextContainer}>
-                                <Text style={styles.activityDescription_agent}>Airline: {flight.segments[0].legs[0].marketingCarrier.displayName}</Text>
+                                <Text style={styles.activityDescription_agent}>{flight.airline}</Text>
                             </View>
-                            <Image style={styles.iconcheap} source={{ uri: flight.segments[0].legs[0].marketingCarrier.logoUrl }} />
-
-
 
                         </View>
                         <Text style={styles.activityDescription}>
                             (Outbound) From:
-                            {flight.segments[0].legs[0].originStationCode} to {flight.segments[0].legs[0].destinationStationCode}
+                            {flight.departure_location_outbound} to {flight.arrival_location_outbound}
                         </Text>
-                        <Text style={styles.activityDescription}>Departure Date: {flight.segments[0].legs[0].departureDateTime.split('T')[0]}</Text>
-                        <Text style={styles.activityDescription}>Departure Time (Local Time): {flight.segments[0].legs[0].departureDateTime.split('T')[1].substr(0, 5)}</Text>
-                        <Text style={styles.activityDescription}>Arrival Date: {flight.segments[0].legs[0].arrivalDateTime.split('T')[0]}</Text>
-                        <Text style={styles.activityDescription}>Arrival Time (Local Time): {flight.segments[0].legs[0].arrivalDateTime.split('T')[1].substr(0, 5)}</Text>
-                        {/* blank line */}
+                        <Text style={styles.activityDescription}>Departure Date: {flight.departure_outbound_datetime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Departure Time (Local Time): {flight.departure_outbound_datetime.split('T')[1].substr(0, 5)}</Text>
+                        <Text style={styles.activityDescription}>Arrival Date: {flight.arrival_outbound_datetime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Arrival Time (Local Time): {flight.arrival_outbound_datetime.split('T')[1].substr(0, 5)}</Text>
                         <Text style={styles.activityDescription}></Text>
                         <Text style={styles.activityDescription}>
                             (Inbound) From:
-                            {flight.segments[1].legs[0].originStationCode} to {flight.segments[1].legs[0].destinationStationCode} </Text>
-                        <Text style={styles.activityDescription}>Departure Date: {flight.segments[1].legs[0].departureDateTime.split('T')[0]}</Text>
-                        <Text style={styles.activityDescription}>Departure Time (Local Time): {flight.segments[1].legs[0].departureDateTime.split('T')[1].substr(0, 5)}</Text>
-                        <Text style={styles.activityDescription}>Arrival Date: {flight.segments[1].legs[0].arrivalDateTime.split('T')[0]}</Text>
-                        <Text style={styles.activityDescription}>Arrival Time (Local Time): {flight.segments[1].legs[0].arrivalDateTime.split('T')[1].substr(0, 5)}</Text>
+                            {flight.departure_location_inbound} to {flight.arrival_location_inbound}
+                        </Text>
+                        <Text style={styles.activityDescription}>Departure Date: {flight.departure_inbound_datetime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Departure Time (Local Time): {flight.departure_inbound_datetime.split('T')[1].substr(0, 5)}</Text>
+                        <Text style={styles.activityDescription}>Arrival Date: {flight.arrival_inbound_datetime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Arrival Time (Local Time): {flight.arrival_inbound_datetime.split('T')[1].substr(0, 5)}</Text>
                         <Text style={styles.activityDescription}></Text>
-
-                        <Text style={styles.flightText2}>Total Price: HKD$ {parseFloat(flight.purchaseLinks[0].totalPrice).toLocaleString("zh-HK")}</Text>
-
+                        <Text style={styles.flightText2}>Total Price: HKD$ {parseFloat(flight.total_price).toLocaleString("zh-HK")}</Text>
                     </Animatable.View>
                 </TouchableOpacity>
             ))}
-
-
         </>
-
     );
 }
 
