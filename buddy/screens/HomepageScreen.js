@@ -142,18 +142,10 @@ const HomepageScreen = () => {
 
     // Construct the request body for the air ticket
     let airTicketParams = JSON.stringify({
-      "departure": flightCodeDeparture,
+      "origin": flightCodeDeparture,
       "destination": flightCodeDestination,
-      "goDate": {
-        "year": fromDate.getFullYear(),
-        "month": fromDate.getMonth() + 1,
-        "day": fromDate.getDate()
-      },
-      "backDate": {
-        "year": toDate.getFullYear(),
-        "month": toDate.getMonth() + 1,
-        "day": toDate.getDate()
-      },
+      "goDate": fromDate.toISOString().slice(0, 10),
+      "backDate": toDate.toISOString().slice(0, 10),
       "adults_num": parseInt(guest),
       "children_ages": parseInt(children)
     });
@@ -256,7 +248,7 @@ const HomepageScreen = () => {
       setHotelData(hotelData);
       navigation.navigate('ResultScreen', {
         newItinerary: true, itineraryData: itineraryData,
-        flightData: airTicketData, hotelData: hotelData, origin: 'HKG',
+        flightData: airTicketData, hotelData: hotelData, origin: flightCodeDeparture,
         destination: flightCodeDestination, tripTitle: tripTitle, location: destination
       });
 

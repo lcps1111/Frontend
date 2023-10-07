@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //export const serverUrl = 'http://192.168.0.108:8004/';
-export const serverUrl = 'http://52.86.173.90:8004/';
+export const serverUrl = 'http://35.229.161.77/';
 
 
 export const addToItineraryList = async (itinerary) => {

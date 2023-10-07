@@ -1,66 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Linking, Image } from "react-native";
 import * as Animatable from 'react-native-animatable';
 import React from "react";
 
-// this is for rendering the flight title
-export const locationTitle = (departure, arrival) => {
-    return (
-
-        <View>
-            <View style={styles.titleContainer}>
-                <Text style={styles.searchFlightText}>Search For Flight</Text>
-            </View>
-            <Text style={styles.locationText}>{departure}</Text>
-        </View>
-
-    );
-}
-// this is for rendering the flight details
-export const renderFlightDetails = (title, departure, arrival) => {
-    return (
-        <Animatable.View animation="fadeInUp" duration={500} style={[styles.dayContainer, {
-            backgroundColor: "#F4F4F4"
-        }]}>
-
-            < Text style={styles.flightText} > {title}</Text>
-            <Animatable.View animation="bounceIn" duration={1000} style={styles.separateBox}>
-                <Text style={styles.activityDescription}>{departure}</Text>
-            </Animatable.View>
-            <Animatable.View animation="bounceIn" duration={1000} style={styles.separateBox}>
-                <Text style={styles.activityDescription}>{arrival}</Text>
-            </Animatable.View>
-        </Animatable.View >
-    );
-};
-
-// this is for rendering the flight links
-export const renderFlightLinks = (links) => {
-    return (
-        <Animatable.View animation="fadeInUp" duration={500} style={[styles.dayContainer2, { backgroundColor: "#F4F4F4" }]}>
-            <Text style={styles.flightText}> Recommended</Text>
-            {(links || []).map((link, index) => (
-
-                <TouchableOpacity onPress={() => handleLinkPress(link.link)} key={index} style={styles.separateBox}>
-                    {index === 0 && (
-                        <View style={styles.cheapestLabel}>
-                            <Text style={styles.cheapestLabelText}>Cheapest</Text>
-                        </View>
-                    )}
-                    <Animatable.View animation="bounceIn" duration={1000} style={styles.activityContainer}>
-                        <View style={styles.foContent}>
-                            <View style={styles.ftextContainer}>
-                                <Text style={styles.activityDescription}>Agent: {link.agentId.toUpperCase()}</Text>
-                                <Text style={styles.activityDescription}>Price: HKD${parseFloat(link.amount).toLocaleString()}</Text>
-                            </View>
-
-                        </View>
-                    </Animatable.View>
-                </TouchableOpacity>
-            ))}
-
-        </Animatable.View>
-    );
-};
 
 // this is for navigating to the external link with alert message
 const handleLinkPress = (linkUrl) => {
@@ -82,21 +23,66 @@ const handleLinkPress = (linkUrl) => {
     );
 };
 
+export default FlightComponent = ({ flights }) => {
+
+
+    return (
+        <>
+
+            <Text style={styles.flightText}>Flights Information</Text>
+
+            {(flights.data.flights || []).map((flight, index) => (
+
+                <TouchableOpacity onPress={() => handleLinkPress(flight.purchaseLinks[0].url)} key={index} style={styles.separateBox}>
+                    {index === 0 && (
+                        <View style={styles.cheapestLabel}>
+                            <Text style={styles.cheapestLabelText}>Cheapest</Text>
+                        </View>
+                    )}
+
+                    <Animatable.View animation="bounceIn" duration={1000} style={styles.activityContainer}>
+                        <View style={styles.foContent}>
+                            <View style={styles.ftextContainer}>
+                                <Text style={styles.activityDescription_agent}>Airline: {flight.segments[0].legs[0].marketingCarrier.displayName}</Text>
+                            </View>
+                            <Image style={styles.iconcheap} source={{ uri: flight.segments[0].legs[0].marketingCarrier.logoUrl }} />
+
+
+
+                        </View>
+                        <Text style={styles.activityDescription}>
+                            (Outbound) From:
+                            {flight.segments[0].legs[0].originStationCode} to {flight.segments[0].legs[0].destinationStationCode}
+                        </Text>
+                        <Text style={styles.activityDescription}>Departure Date: {flight.segments[0].legs[0].departureDateTime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Departure Time (Local Time): {flight.segments[0].legs[0].departureDateTime.split('T')[1].substr(0, 5)}</Text>
+                        <Text style={styles.activityDescription}>Arrival Date: {flight.segments[0].legs[0].arrivalDateTime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Arrival Time (Local Time): {flight.segments[0].legs[0].arrivalDateTime.split('T')[1].substr(0, 5)}</Text>
+                        {/* blank line */}
+                        <Text style={styles.activityDescription}></Text>
+                        <Text style={styles.activityDescription}>
+                            (Inbound) From:
+                            {flight.segments[1].legs[0].originStationCode} to {flight.segments[1].legs[0].destinationStationCode} </Text>
+                        <Text style={styles.activityDescription}>Departure Date: {flight.segments[1].legs[0].departureDateTime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Departure Time (Local Time): {flight.segments[1].legs[0].departureDateTime.split('T')[1].substr(0, 5)}</Text>
+                        <Text style={styles.activityDescription}>Arrival Date: {flight.segments[1].legs[0].arrivalDateTime.split('T')[0]}</Text>
+                        <Text style={styles.activityDescription}>Arrival Time (Local Time): {flight.segments[1].legs[0].arrivalDateTime.split('T')[1].substr(0, 5)}</Text>
+                        <Text style={styles.activityDescription}></Text>
+
+                        <Text style={styles.flightText2}>Total Price: HKD$ {parseFloat(flight.purchaseLinks[0].totalPrice).toLocaleString("zh-HK")}</Text>
+
+                    </Animatable.View>
+                </TouchableOpacity>
+            ))}
+
+
+        </>
+
+    );
+}
+
 const styles = StyleSheet.create({
 
-
-    dayContainer: {
-        marginBottom: 20,
-        borderRadius: 10,
-        backgroundColor: "#F4F4F4",
-
-    },
-    dayContainer2: {
-        marginBottom: 20,
-        borderRadius: 10,
-        backgroundColor: "#F4F4F4",
-
-    },
 
     activityContainer: {
         padding: 10,
@@ -104,19 +90,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
 
     },
-    titleContainer: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        marginBottom: 20,
-    },
-    searchFlightText: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 10,
-        color: "#BF9898",
 
-    },
 
     flightText: {
         fontSize: 24,
@@ -124,30 +98,26 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: "black",
     },
-
-    locationText: {
-        fontSize: 30,
-        fontWeight: "bold",
-        marginBottom: 20,
-        color: "black",
-    },
-    flightTitleText: {
-        fontSize: 24,
+    flightText2: {
+        fontSize: 18,
         fontWeight: "bold",
         marginBottom: 10,
         color: "black",
     },
+
+
     activityDescription: {
         fontSize: 14,
         marginBottom: 10,
         color: "#666",
     },
-    activityTitle2: {
-        fontSize: 18,
+    activityDescription_agent: {
+        fontSize: 14,
+        marginBottom: 10,
         fontWeight: "bold",
-        marginBottom: 5,
         color: "black",
     },
+
     foContent: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -176,7 +146,7 @@ const styles = StyleSheet.create({
     cheapestLabel: {
         position: "absolute",
         top: -13,
-        left: 15,
+        left: 2,
         backgroundColor: "#B00326",
         paddingHorizontal: 13,
         borderRadius: 6

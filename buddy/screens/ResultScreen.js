@@ -6,10 +6,11 @@ import { ArrowUpCircleIcon, TrashIcon, PlusCircleIcon, HomeIcon } from "react-na
 import { addToItineraryList, getItinerary, addItinerary, removeFromItinerary, replaceItinerary, parseTime } from '../service/dataService';
 import { MapComponent, mapAnimateToRegion } from '../components/MapComponent';
 import { renderHotel } from "../components/hotelComponent";
-import { renderFlightDetails, renderFlightLinks, locationTitle } from "../components/flightComponent";
+import FlightComponent, { renderFlightDetails, renderFlightLinks, locationTitle } from "../components/flightComponent";
 import { GooglePlacesInput } from "../components/GooglePlacesInput";
 import { SingleSpot } from "../components/SingleSpot";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import flightComponent from "../components/flightComponent";
 
 // this is the result page of the app, including the itinerary, flight details, hotel details and the buttons to render the respective components.
 const ResultScreen = ({ route }) => {
@@ -26,8 +27,20 @@ const ResultScreen = ({ route }) => {
         hotelData: [],
         ...route.params,
     });
+    console.log("Origin", params.flightData.data.flights[0].segments[0].legs[0].originStationCode);
+    console.log("Destination", params.flightData.data.flights[0].segments[0].legs[0].destinationStationCode);
+    console.log("departureDateTime's Date for leg1", params.flightData.data.flights[0].segments[0].legs[0].departureDateTime.split('T')[0]);
+    console.log("departureDateTime's Time for leg1", params.flightData.data.flights[0].segments[0].legs[0].departureDateTime.split('T')[1].substr(0, 5));
+    console.log("arrivalDateTime's Date for leg1", params.flightData.data.flights[0].segments[0].legs[0].arrivalDateTime.split('T')[0]);
+    console.log("arrivalDateTime's Time for leg1", params.flightData.data.flights[0].segments[0].legs[0].arrivalDateTime.split('T')[1].substr(0, 5));
+    console.log("departureDateTime's Date for leg2", params.flightData.data.flights[0].segments[1].legs[0].departureDateTime.split('T')[0]);
+    console.log("departureDateTime's Time for leg2", params.flightData.data.flights[0].segments[1].legs[0].departureDateTime.split('T')[1].substr(0, 5));
+    console.log("arrivalDateTime's Date for leg2", params.flightData.data.flights[0].segments[1].legs[0].arrivalDateTime.split('T')[0]);
+    console.log("arrivalDateTime's Time for leg2", params.flightData.data.flights[0].segments[1].legs[0].arrivalDateTime.split('T')[1].substr(0, 5));
+    console.log("totalPrice", params.flightData.data.flights[0].purchaseLinks[0].totalPrice);
+    console.log("providerId", params.flightData.data.flights[0].purchaseLinks[0].providerId);
+    console.log("url", params.flightData.data.flights[0].purchaseLinks[0].url);
 
-    console.log(params.hotelData.results[0])
 
     const navigation = useNavigation();
     const [showItinerary, setShowItinerary] = useState(true);
@@ -181,15 +194,15 @@ const ResultScreen = ({ route }) => {
         }
     }, []);
     // this if for parsing the price to integer and calculating the total price
-    useEffect(() => {
-        let sum = 0;
-        for (const day in params.itineraryData) {
-            for (const activity of params.itineraryData[day]) {
-                sum += parseInt(activity['price(hkd)']);
-            }
-        }
-        setTotalPrice(sum);
-    }, [params.itineraryData]);
+    // useEffect(() => {
+    //     let sum = 0;
+    //     for (const day in params.itineraryData) {
+    //         for (const activity of params.itineraryData[day]) {
+    //             sum += parseInt(activity['price(hkd)']);
+    //         }
+    //     }
+    //     setTotalPrice(sum);
+    // }, [params.itineraryData]);
 
     return (
         // this is for rendering the itinerary details and the buttons to render the respective components and the buttons to save and return to the home page
@@ -412,28 +425,9 @@ const ResultScreen = ({ route }) => {
 
                             ))}
 
-                    {showFlightDetails && params.flightData.map((flight, index) => (
-                        // this is for rendering the flight details
-                        <React.Fragment key={index}>
-                            {locationTitle(`${params.origin} - ${params.destination}`)}
-
-                            {renderFlightDetails('Flight Details-Outbound', `Departure:(${params.origin})\n
-                            Date:${flight.goDepartureDateTime.day}-${flight.goDepartureDateTime.month}-${flight.goDepartureDateTime.year}\n
-                            Time:${flight.goDepartureDateTime.hour}:${flight.goDepartureDateTime.minute}`, `Arrival(${params.destination}):\n
-                            Date:${flight.goArrivalDateTime.day}-${flight.goArrivalDateTime.month}-${flight.goArrivalDateTime.year}\n
-                            Time: ${flight.goArrivalDateTime.hour}:${flight.goArrivalDateTime.minute}`)}
-
-                            {renderFlightDetails('Flight Details-Return', `Departure:(${params.destination}) \n
-                            Date:${flight.backDepartureDateTime.day}-${flight.backDepartureDateTime.month}-${flight.backDepartureDateTime.year}\n
-                            Time: ${flight.backDepartureDateTime.hour}:${flight.backDepartureDateTime.minute}`, `Arrival:(${params.origin})\n
-                            Date:${flight.backArrivalDateTime.day}-${flight.backArrivalDateTime.month}-${flight.backArrivalDateTime.year}\n
-                            Time: ${flight.backArrivalDateTime.hour}:${flight.backArrivalDateTime.minute}`)}
-
-                            {renderFlightLinks(flight.pricingOptions || [])}
-                        </React.Fragment>
-
-                    ))}
-
+                    {showFlightDetails && <FlightComponent
+                        flights={params.flightData}
+                    />}
 
 
 
