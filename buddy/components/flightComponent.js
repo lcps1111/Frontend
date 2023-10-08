@@ -32,8 +32,7 @@ export default FlightComponent = ({ flights, gender }) => {
                 <TouchableOpacity onPress={() => {
                     handleLinkPress(flight.uri);
                     clickLogger("flight", gender)
-                }}
-                    key={index} style={styles.separateBox}>
+                }} key={index} style={styles.separateBox}>
                     {index === 0 && (
                         <View style={styles.cheapestLabel}>
                             <Text style={styles.cheapestLabelText}>Cheapest</Text>

@@ -47,27 +47,32 @@ export const MapComponent = ({ mapRef, oriLat, oriLng, destLat, destLng }) => {
                 longitude: oriLng,
                 latitudeDelta: 0.5,
                 longitudeDelta: 0.5
-            }}>{JSON.stringify(origin) !== JSON.stringify(destination) && (
-                <MapViewDirections
-                    origin={origin}
-                    destination={destination}
-                    apikey={GOOGLE_MAPS_APIKEY}
-                    strokeWidth={3}
-                    mode="DRIVING"
-                    onError={(error) => {
-                        setOrigin(destination);
-                    }}
-                    onReady={result => {
-                        mapRef.current.fitToCoordinates(result.coordinates, {
-                            edgePadding: {
-                                right: 50,
-                                bottom: 50,
-                                left: 50,
-                                top: 50
-                            }
-                        });
-                    }}
-                />)}
+            }}>{JSON.stringify(origin) !== JSON.stringify(destination)
+                // && (
+                // <MapViewDirections
+                //     origin={origin}
+                //     destination={destination}
+                //     apikey={GOOGLE_MAPS_APIKEY}
+                //     strokeWidth={3}
+                //     mode="DRIVING"
+                //     onError={(error) => {
+                //         console.log("origin", origin, "destination", destination)
+                //         console.log(error)
+                //         setOrigin(destination);
+                //     }}
+                //     onReady={result => {
+                //         mapRef.current.fitToCoordinates(result.coordinates, {
+                //             edgePadding: {
+                //                 right: 50,
+                //                 bottom: 50,
+                //                 left: 50,
+                //                 top: 50
+                //             }
+                //         });
+                //     }}
+                // />
+                // )
+            }
             <Marker coordinate={{ latitude: origin.latitude, longitude: origin.longitude }} pinColor={'green'} />
             {JSON.stringify(origin) !== JSON.stringify(destination) && (
                 <Marker coordinate={{ latitude: destination.latitude, longitude: destination.longitude }} pinColor={'red'} />)}

@@ -239,6 +239,10 @@ const HomepageScreen = () => {
         });
       }
 
+
+
+
+
       // Get the response data
       const [itineraryData, airTicketData, hotelData] = await Promise.all([itineraryResponse.json(), airTicketResponse.json(), hotelResponse.json()]);
 
@@ -254,7 +258,7 @@ const HomepageScreen = () => {
 
 
     } catch (e) {
-      console.error(`Fetch error: ${e}`);
+      console.log(`Fetch error: ${e}`);
       setProcessing(false); // Stop processing animation if error occurs
     }
 

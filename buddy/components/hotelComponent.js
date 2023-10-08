@@ -36,22 +36,22 @@ export const renderHotel = (hotel, index, numResults, gender) => {
                 <Text style={styles.HotelText}>{hotel.name}</Text>
                 <Animatable.View animation="bounceIn" duration={1000} style={[styles.Hotel2Container, { backgroundColor: "#F4F4F4" }]}>
                     <Text style={styles.activityDescription}>
-                        <Text style={{ fontWeight: 'bold', color: '#333333' }}>Total Amount:</Text> HKD{parseFloat(hotel.price.total).toLocaleString()}
+                        <Text key={index} style={{ fontWeight: 'bold', color: '#333333' }}>Total Amount:</Text> HKD{parseFloat(hotel.price.total).toLocaleString()}
                     </Text>
                     <Text style={styles.activityDescription}>
-                        <Text style={{ fontWeight: 'bold', color: '#333333' }}>Location:</Text> {hotel.address}
+                        <Text key={index} style={{ fontWeight: 'bold', color: '#333333' }}>Location:</Text> {hotel.address}
                     </Text>
                     <Text style={styles.activityDescription}>
-                        <Text style={{ fontWeight: 'bold', color: '#333333' }}>Number of Bedrooms:</Text> {hotel.bedrooms}
+                        <Text key={index} style={{ fontWeight: 'bold', color: '#333333' }}>Number of Bedrooms:</Text> {hotel.bedrooms}
                     </Text>
                     <Text style={styles.activityDescription}>
-                        <Text style={{ fontWeight: 'bold', color: '#333333' }}>Number of Bathrooms:</Text> {hotel.bathrooms}
+                        <Text key={index} style={{ fontWeight: 'bold', color: '#333333' }}>Number of Bathrooms:</Text> {hotel.bathrooms}
                     </Text>
                     <Text style={styles.activityDescription}>
-                        <Text style={{ fontWeight: 'bold', color: '#333333' }}>Amenities:</Text> {hotel.previewAmenities}
+                        <Text key={index} style={{ fontWeight: 'bold', color: '#333333' }}>Amenities:</Text> {hotel.previewAmenities}
                     </Text>
                     <Text style={styles.activityDescription}>
-                        <Text style={{ fontWeight: 'bold', color: '#333333' }}>Rental Type:</Text> {hotel.type}
+                        <Text key={index} style={{ fontWeight: 'bold', color: '#333333' }}>Rental Type:</Text> {hotel.type}
                     </Text>
                     <ScrollView pagingEnabled decelerationRate='fast' horizontal showsHorizontalScrollIndicator={false} style={{ zIndex: 9999 }}>
                         {hotel.images.map((image, index) => (
@@ -64,8 +64,9 @@ export const renderHotel = (hotel, index, numResults, gender) => {
                         ))}
                     </ScrollView>
                     <TouchableOpacity onPress={() => {
+                        key = { index }
                         handleLinkPress(hotel.deeplink);
-                        clickLogger("accommodation", gender)
+                        clickLogger(type = "accommodation", gender)
                     }}>
                         <Animatable.View
                             animation="bounceIn"

@@ -18,6 +18,7 @@ const ResultScreen = ({ route }) => {
 
     const [params, setParams] = useState({
         newItinerary: false,
+        gender: '',
         itineraryData: {},
         id: null,
         flightData: [],
@@ -28,7 +29,6 @@ const ResultScreen = ({ route }) => {
         hotelData: [],
         ...route.params,
     });
-
 
     const navigation = useNavigation();
     const [showItinerary, setShowItinerary] = useState(true);
@@ -42,11 +42,15 @@ const ResultScreen = ({ route }) => {
     const [chosenSpot, setChosenSpot] = useState(params.itineraryData["Day 1"][0] ?? {});
     const scrollRef = useRef(null);
     const mapRef = useRef(null);
+    const [gender, setGender] = useState('');
     const [hotelSortOrder, setHotelSortOrder] = useState('asc');
     const [numResults, setNumResults] = useState(5);
     const [totalPrice, setTotalPrice] = useState(0);
     // this is for reloading the itinerary
+
+    console.log(params.itineraryData)
     const reloadItinerary = async (id = params.id) => {
+
         const updatedItinerary = await getItinerary(id);
         setParams((prevState) => ({
             ...prevState,
@@ -80,6 +84,9 @@ const ResultScreen = ({ route }) => {
         );
 
     }
+
+
+
     // this is for returning to the home page
     const handleReturn = () => {
         navigation.navigate('Home');
@@ -166,7 +173,8 @@ const ResultScreen = ({ route }) => {
                 origin: params.origin,
                 destination: params.destination,
                 tripTitle: params.tripTitle,
-                location: params.location
+                location: params.location,
+                gender: params.gender
             }).then((id) => {
                 setParams((prevState) => ({
                     ...prevState,
@@ -181,6 +189,11 @@ const ResultScreen = ({ route }) => {
 
         }
     }, []);
+    // add gender to the state
+    useEffect(() => {
+        setGender(params.gender)
+    }, [params.gender]);
+
     // this if for parsing the price to integer and calculating the total price
     useEffect(() => {
         let sum = 0;
@@ -299,7 +312,7 @@ const ResultScreen = ({ route }) => {
                         setShowFlightDetails(false);
                         setShowHotelDetails(false);
                         setShowGooglePlacesInput(false);
-                        clickLogger("add new spot", params.gender);
+                        clickLogger("add new spot", gender);
                     }}
                     onCancel={() => {
                         setShowMap(true);
@@ -406,7 +419,7 @@ const ResultScreen = ({ route }) => {
                                                 style={styles.deleteButton}
                                                 onPress={() => {
                                                     deleteSpot(params.id, day, activity.tourist_spot || activity.restaurant);
-                                                    clickLogger("delete spot", params.gender);
+                                                    clickLogger("delete spot", gender);
                                                 }}
                                             >
                                                 <TrashIcon size={25} color="gray" />
@@ -437,7 +450,7 @@ const ResultScreen = ({ route }) => {
 
                     {showFlightDetails && <FlightComponent
                         flights={params.flightData}
-                        gender={params.gender}
+                        gender={gender}
                     />}
 
 
@@ -454,8 +467,8 @@ const ResultScreen = ({ route }) => {
                             })
                             .map((hotel, index) => {
                                 const sortedImages = hotelSortOrder === 'asc' ? hotel.images.sort() : hotel.images.sort().reverse();
-                                const sortedHotel = { ...hotel, images: sortedImages };
-                                return renderHotel(sortedHotel, index, numResults, gender = params.gender);
+                                const sortedHotel = { ...hotel, images: sortedImages, index };
+                                return renderHotel(sortedHotel, index, numResults, gender);
                             })
                     }
                     { // this is for rendering the hotel details

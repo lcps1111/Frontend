@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//export const serverUrl = 'http://192.168.0.108:8004/';
+// export const serverUrl = 'http://localhost:8004/';
 export const serverUrl = 'http://35.229.161.77/';
 
 
@@ -142,8 +142,6 @@ export const updateLatLng = async (id) => {
             value[i]["itineraryData"]["Day 1"][0].fromLng = json.lng;
           })
 
-
-        console.log("value[i]", value[i])
         for (var day in value[i]["itineraryData"]) {
           for (var spot = 0; spot < value[i]["itineraryData"][day].length; spot++) {
             if (spot == 0 && day == "Day 1") {
@@ -245,7 +243,6 @@ export const clearAll = async () => {
 export const listAllKeys = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
-    console.log(keys);
     return keys;
   } catch (e) {
     console.log('Failed to list all keys');
